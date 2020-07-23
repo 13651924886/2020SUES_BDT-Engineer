@@ -1,0 +1,12 @@
+.\objects\shoot.o: ..\user\APP\shoot\shoot.c
+.\objects\shoot.o: ..\user\APP\shoot\Shoot.h
+.\objects\shoot.o: ..\User\main.h
+.\objects\shoot.o: ..\User\APP\CAN_Receive\CAN_Receive.h
+.\objects\shoot.o: ..\User\APP\Remote_Control\remote_control.h
+.\objects\shoot.o: ..\User\hardware\RC\rc.h
+.\objects\shoot.o: ..\user\user_lib\user_lib.h
+.\objects\shoot.o: ..\User\APP\Gimbal_Task\Gimbal_Task.h
+.\objects\shoot.o: ..\User\APP\pid\pid.h
+.\objects\shoot.o: ..\User\APP\Gimbal_Task\gimbal_behaviour.h
+.\objects\shoot.o: ..\User\APP\Detect_Task\Detect_Task.h
+.\objects\shoot.o: ..\User\hardware\LASER\laser.h
