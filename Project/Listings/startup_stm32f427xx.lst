@@ -918,9 +918,9 @@ Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\objects\startup_stm32f427xx.d -o.\objects\startup_stm32f427xx
 .o -I.\RTE\_standard -ID:\MDK\Arm\Packs\ARM\CMSIS\5.5.1\CMSIS\Core\Include -ID:
 \MDK\Arm\Packs\ARM\CMSIS\5.5.1\CMSIS\DSP\Include -ID:\MDK\Arm\Packs\Keil\STM32F
-4xx_DFP\2.7.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UVISION_
-VERSION SETA 527" --predefine="_RTE_ SETA 1" --predefine="STM32F427xx SETA 1" -
--list=.\listings\startup_stm32f427xx.lst ..\startup\startup_stm32f427xx.s
+4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UVISION
+_VERSION SETA 527" --predefine="_RTE_ SETA 1" --predefine="STM32F427xx SETA 1" 
+--list=.\listings\startup_stm32f427xx.lst ..\startup\startup_stm32f427xx.s
 
 
 

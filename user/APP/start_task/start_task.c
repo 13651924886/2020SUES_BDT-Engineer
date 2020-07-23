@@ -13,6 +13,7 @@
 #include "Revive_task.h"
 #include "RescueHook_task.h"
 
+#include "referee_usart_task.h"
 
 
 //偷懒临时加的 之后要写成对象
@@ -42,6 +43,7 @@ static void Loop_1000Hz(void)	//1ms执行一次，执行时间大约为
 static void Loop_500Hz(void)	//2ms执行一次   姿态角速度环、电机输出
 {	
 			chassis_task();			
+			referee_usart_task(); //裁判系统读取
 }
 
 static void Loop_200Hz(void)	//5ms执行一次  RPY计算、姿态角度环

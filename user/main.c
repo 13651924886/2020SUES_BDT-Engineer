@@ -39,6 +39,7 @@
 #include "GRIPPER_task.h"
 #include "CATCH_task.h"
 #include "RescueHook_task.h"
+#include "referee_usart_task.h"
 
 #include "remote_control.h"
 #include "start_task.h"
@@ -92,19 +93,22 @@ void BSP_init(void)
 		Y_MOTION_Setup();
 		CATCH_Setup();
     //24v 输出 依次上电
-//    for (uint8_t i = POWER1_CTRL_SWITCH; i < POWER4_CTRL_SWITCH + 1; i++)
-//    {
-//        power_ctrl_on(i);
-//        delay_us(POWER_CTRL_ONE_BY_ONE_TIME);
-//    }
+    for (uint8_t i = POWER1_CTRL_SWITCH; i < POWER4_CTRL_SWITCH + 1; i++)
+    {
+        power_ctrl_on(i);
+        delay_us(POWER_CTRL_ONE_BY_ONE_TIME);
+    }
     //遥控器初始化
     remote_control_init();
     //flash读取函数，把校准值放回对应参数
     //cali_param_init();
 		//Calibration_Init();
+		Referee_Task_Init();											//USART6 + DMA  裁判系统读取	
+		
 		BSPInit_CompleteBeep();
 		buzzer_init(30000, 90);
 		//CAN2_mode_init(CAN_SJW_1tq, CAN_BS2_2tq, CAN_BS1_6tq, 5, CAN_Mode_Normal);
+
 		delay_ms(2000);
 		//AMMO17_out();
 //		AMMO42_out();

@@ -61,6 +61,7 @@
 ".\objects\spi.o"
 ".\objects\sys.o"
 ".\objects\timer.o"
+".\objects\usart6.o"
 ".\objects\can_receive.o"
 ".\objects\chassis_behaviour.o"
 ".\objects\chassis_task.o"
@@ -74,6 +75,10 @@
 ".\objects\catch_task.o"
 ".\objects\rescuehook_task.o"
 ".\objects\revive_task.o"
+".\objects\referee_api.o"
+".\objects\referee_usart_task.o"
+".\objects\fifo.o"
+".\objects\crc8_crc16.o"
 "D:\MDK\Arm\Packs\ARM\CMSIS\5.5.1\CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib"
 --strict --scatter ".\Objects\infantry.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols

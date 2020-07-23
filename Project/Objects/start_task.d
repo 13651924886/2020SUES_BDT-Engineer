@@ -54,3 +54,5 @@
 .\objects\start_task.o: ..\user\APP\AMMO_OUT_task\AMMO_OUT_task.h
 .\objects\start_task.o: ..\user\APP\Revive_task\Revive_task.h
 .\objects\start_task.o: ..\user\APP\Rescuehook_task\RescueHook_task.h
+.\objects\start_task.o: ..\user\APP\referee_parse\referee_usart_task.h
+.\objects\start_task.o: ..\user\APP\referee_parse\protocol.h

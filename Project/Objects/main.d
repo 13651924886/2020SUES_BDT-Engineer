@@ -60,4 +60,6 @@
 .\objects\main.o: ..\user\APP\GRIPPER_task\GRIPPER_task.h
 .\objects\main.o: ..\user\APP\CATCH_task\CATCH_task.h
 .\objects\main.o: ..\user\APP\Rescuehook_task\RescueHook_task.h
+.\objects\main.o: ..\user\APP\referee_parse\referee_usart_task.h
+.\objects\main.o: ..\user\APP\referee_parse\protocol.h
 .\objects\main.o: ..\User\APP\Start_Task\start_task.h
