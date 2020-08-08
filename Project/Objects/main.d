@@ -56,7 +56,7 @@
 .\objects\main.o: ..\User\APP\Remote_Control\Remote_Control.h
 .\objects\main.o: ..\user\user_lib\user_lib.h
 .\objects\main.o: ..\user\APP\AMMO_OUT_task\AMMO_OUT_task.h
-.\objects\main.o: ..\user\APP\Y_MOTION_task\Y_MOTION_task.h
+.\objects\main.o: ..\user\APP\XYZ_MOTION_task\XYZ_MOTION_task.h
 .\objects\main.o: ..\user\APP\GRIPPER_task\GRIPPER_task.h
 .\objects\main.o: ..\user\APP\CATCH_task\CATCH_task.h
 .\objects\main.o: ..\user\APP\Rescuehook_task\RescueHook_task.h

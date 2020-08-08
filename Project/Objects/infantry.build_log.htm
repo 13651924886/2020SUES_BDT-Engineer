@@ -17,12 +17,12 @@ Library Manager: ArmAr.exe V5.06 update 6 (build 750)
 Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
 CPU DLL:         SARMCM3.DLL V5.27.1.0
 Dialog DLL:      DCM.DLL V1.17.2.0
-Target DLL:      CMSIS_AGDI.dll V1.31.17.0
+Target DLL:      Segger\JL2CM3.dll V2.99.35.0
 Dialog DLL:      TCM.DLL V1.36.1.0
  
 <h2>Project:</h2>
 E:\Code_Embeded\RM_Code\2020SUES_BDT-Engineer\Project\standard.uvprojx
-Project File Date:  07/23/2020
+Project File Date:  08/08/2020
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\MDK\ARM\ARMCC\Bin'
@@ -32,19 +32,15 @@ compiling start_task.c...
   #endif
 ..\user\APP\Revive_task\Revive_task.h(15): warning:  #1-D: last line of file ends without a newline
   #endif
-..\user\APP\Rescuehook_task\RescueHook_task.h(9): warning:  #1295-D: Deprecated declaration HOOK_OUT_PWM_configuration - give arg types
-  extern void HOOK_OUT_PWM_configuration();
-..\user\APP\start_task\start_task.c(36): warning:  #223-D: function "CAN_CMD_Upper" declared implicitly
-  			CAN_CMD_Upper(Y_MOTION_move.Y_MOTION_Left_motor.give_current,-Y_MOTION_move.Y_MOTION_Left_motor.give_current,
-..\user\APP\start_task\start_task.c(55): warning:  #223-D: function "AMMO_42mm_OUT_task" declared implicitly
-  			AMMO_42mm_OUT_task();
-..\user\APP\start_task\start_task.c(56): warning:  #223-D: function "AMMO_17mm_OUT_task" declared implicitly
+..\user\APP\start_task\start_task.c(37): warning:  #223-D: function "CAN_CMD_Upper" declared implicitly
+  			CAN_CMD_Upper(XYZ_MOTION_move.Y_MOTION_Left_motor.give_current,-XYZ_MOTION_move.Y_MOTION_Left_motor.give_current,
+..\user\APP\start_task\start_task.c(57): warning:  #223-D: function "AMMO_17mm_OUT_task" declared implicitly
   			AMMO_17mm_OUT_task();
-..\user\APP\start_task\start_task.c: 6 warnings, 0 errors
+..\user\APP\start_task\start_task.c: 4 warnings, 0 errors
 linking...
-Program Size: Code=17920 RO-data=1320 RW-data=208 ZI-data=5608  
+Program Size: Code=17872 RO-data=1320 RW-data=208 ZI-data=5608  
 FromELF: creating hex file...
-".\Objects\infantry.axf" - 0 Error(s), 6 Warning(s).
+".\Objects\infantry.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -71,8 +67,8 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.2.0
 
    * Component: ARM::CMSIS:DSP:Library:1.6.0
-      Library file:  CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib
       Include file:  CMSIS\DSP\Include\arm_math.h
+      Library file:  CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib
 Build Time Elapsed:  00:00:02
 </pre>
 </body>

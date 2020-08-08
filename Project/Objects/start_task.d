@@ -48,7 +48,7 @@
 .\objects\start_task.o: ..\FWLIB\inc\stm32f4xx_sai.h
 .\objects\start_task.o: ..\User\APP\User_Task\User_Task.h
 .\objects\start_task.o: ..\User\hardware\BUZZER\buzzer.h
-.\objects\start_task.o: ..\user\APP\Y_MOTION_task\Y_MOTION_task.h
+.\objects\start_task.o: ..\user\APP\XYZ_MOTION_task\XYZ_MOTION_task.h
 .\objects\start_task.o: ..\user\APP\GRIPPER_task\GRIPPER_task.h
 .\objects\start_task.o: ..\user\APP\CATCH_task\CATCH_task.h
 .\objects\start_task.o: ..\user\APP\AMMO_OUT_task\AMMO_OUT_task.h

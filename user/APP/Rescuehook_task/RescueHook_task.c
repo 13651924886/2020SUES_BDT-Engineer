@@ -5,7 +5,7 @@ static void RescueHook_ReachOut(void);
 static void RescueHook_Reset(void);
 
 
-void HOOK_OUT_PWM_configuration()
+void HOOK_OUT_PWM_configuration(void)
 {	
 	GPIO_InitTypeDef GPIO_InitStructure;
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;

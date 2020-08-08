@@ -6,7 +6,7 @@
 #include "remote_control.h"
 
 
-extern void HOOK_OUT_PWM_configuration();
+extern void HOOK_OUT_PWM_configuration(void);
 extern void Rescue_task(void);
 
 

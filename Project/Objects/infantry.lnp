@@ -69,7 +69,6 @@
 ".\objects\pid.o"
 ".\objects\remote_control.o"
 ".\objects\start_task.o"
-".\objects\y_motion_task.o"
 ".\objects\ammo_out_task.o"
 ".\objects\gripper_task.o"
 ".\objects\catch_task.o"
@@ -79,6 +78,7 @@
 ".\objects\referee_usart_task.o"
 ".\objects\fifo.o"
 ".\objects\crc8_crc16.o"
+".\objects\xyz_motion_task.o"
 "D:\MDK\Arm\Packs\ARM\CMSIS\5.5.1\CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib"
 --strict --scatter ".\Objects\infantry.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
