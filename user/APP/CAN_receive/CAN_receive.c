@@ -69,7 +69,7 @@ static void CAN_hook(CanRxMsg *rx_message);
 /*********************** 全局变量定义 ***************************/
 //声明电机变量
 //static motor_measure_t motor_yaw, motor_pit, motor_trigger, motor_chassis[4];
-motor_measure_t Y_left_motor,Y_right_motor, gripper_1_motor, gripper_2_motor, motor_chassis[4]; //方便Debug查看变量 把静态去掉
+motor_measure_t Y_motion_motor,Z_motion_motor1, Z_motion_motor2, gripper_1_motor, gripper_2_motor, motor_chassis[4]; //方便Debug查看变量 把静态去掉
 
 static CanTxMsg GIMBAL_TxMessage;
 		
@@ -104,14 +104,14 @@ void CAN1_RX0_IRQHandler(void)
 
 //发送云台控制命令，其中rev为保留字节
 //Gimbal_Task里用
-void CAN_CMD_Upper(int16_t Y_MOTION_LEFT_MOTOR, int16_t Y_MOTION_RIGHT_MOTOR, int16_t GPRIPPER_MOTOR1, int16_t GPRIPPER_MOTOR2)
+void CAN_CMD_Upper(int16_t Y_MOTION_motor, int16_t Y_MOTION_RIGHT_MOTOR, int16_t GPRIPPER_MOTOR1, int16_t GPRIPPER_MOTOR2)
 {
     GIMBAL_TxMessage.StdId = CAN_GIMBAL_ALL_ID;
     GIMBAL_TxMessage.IDE = CAN_ID_STD;
     GIMBAL_TxMessage.RTR = CAN_RTR_DATA;
     GIMBAL_TxMessage.DLC = 0x08;
-    GIMBAL_TxMessage.Data[0] = (Y_MOTION_LEFT_MOTOR >> 8);
-    GIMBAL_TxMessage.Data[1] = Y_MOTION_LEFT_MOTOR;
+    GIMBAL_TxMessage.Data[0] = (Y_MOTION_motor >> 8);
+    GIMBAL_TxMessage.Data[1] = Y_MOTION_motor;
     GIMBAL_TxMessage.Data[2] = (Y_MOTION_RIGHT_MOTOR >> 8);
     GIMBAL_TxMessage.Data[3] = Y_MOTION_RIGHT_MOTOR;
     GIMBAL_TxMessage.Data[4] = (GPRIPPER_MOTOR1 >> 8);
@@ -179,14 +179,19 @@ void CAN_CMD_CHASSIS(int16_t motor1, int16_t motor2, int16_t motor3, int16_t mot
 }
 
 //返回yaw电机变量地址，通过指针方式获取原始数据
-  const motor_measure_t *get_Y_LEFT_MOTOR_Measure_Point(void)
+  const motor_measure_t *get_Y_MOTION_MOTOR_Measure_Point(void)
 {
-    return &Y_left_motor;
+    return &Y_motion_motor;
 }
-//返回pitch电机变量地址，通过指针方式获取原始数据
-const motor_measure_t *get_Y_RIGHT_MOTOR_Measure_Point(void)
+//返回XYZ滑台上Z轴电机1变量地址，通过指针方式获取原始数据
+const motor_measure_t *get_Z_MOTION_MOTOR1_Measure_Point(void)
 {
-    return &Y_right_motor;
+    return &Z_motion_motor1;
+}
+//返回XYZ滑台上Z轴电机2变量地址
+const motor_measure_t *get_Z_MOTION_MOTOR2_Measure_Point(void)
+{
+    return &Z_motion_motor2;
 }
 //返回trigger电机变量地址，通过指针方式获取原始数据
 const motor_measure_t *get_GRIPPER_1_MOTOR_Measure_Point(void)
@@ -209,34 +214,34 @@ static void CAN_hook(CanRxMsg *rx_message)
 {
     switch (rx_message->StdId)
     {
-    case CAN_Y_LEFT_MOTOR_ID:
+    case CAN_Y_MOTION_MOTOR_ID:
     {
         //处理电机数据宏函数
-        get_motor_measure(&Y_left_motor, rx_message);
+        get_motor_measure(&Y_motion_motor, rx_message);
         //记录时间
         //DetectHook(YawGimbalMotorTOE);  //临时去掉DetectTask任务
         break;
     }
-    case CAN_Y_RIGHT_MOTOR_ID:
+    case CAN_Z_MOTION_MOTOR1_ID:
     {
         //处理电机数据宏函数
-       get_motor_measure(&Y_right_motor, rx_message);
+       get_motor_measure(&Z_motion_motor1, rx_message);
        // DetectHook(PitchGimbalMotorTOE);
         break;
     }
-    case CAN_GRIPPER_1_MOTOR_ID:
+    case CAN_Z_MOTION_MOTOR2_ID:
     {
         //处理电机数据宏函数
-        get_motor_measure(&gripper_1_motor, rx_message);
+        get_motor_measure(&Z_motion_motor2, rx_message);
         //记录时间
         //DetectHook(TriggerMotorTOE);  //临时去掉DetectTask任务
         break;
     }
-		case CAN_GRIPPER_2_MOTOR_ID:
-		{
-				get_motor_measure(&gripper_2_motor, rx_message);
-				break;
-		}
+//		case CAN_GRIPPER_2_MOTOR_ID:
+//		{
+//				get_motor_measure(&gripper_2_motor, rx_message);
+//				break;
+//		}
     case CAN_3508_M1_ID:
     case CAN_3508_M2_ID:
     case CAN_3508_M3_ID:

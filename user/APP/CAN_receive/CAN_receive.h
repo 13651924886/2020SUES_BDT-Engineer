@@ -34,10 +34,11 @@ typedef enum
     CAN_3508_M3_ID = 0x203,			//CAN反馈报文标识符
     CAN_3508_M4_ID = 0x204,			//CAN反馈报文标识符
 
-    CAN_Y_LEFT_MOTOR_ID = 0x205,		//CAN反馈报文标识符
-    CAN_Y_RIGHT_MOTOR_ID = 0x206,		//CAN反馈报文标识符
-    CAN_GRIPPER_1_MOTOR_ID = 0x207,//CAN反馈报文标识符
-		CAN_GRIPPER_2_MOTOR_ID = 0x208,//CAN反馈报文标识符
+    CAN_Y_MOTION_MOTOR_ID = 0x205,		//CAN反馈报文标识符
+    CAN_Z_MOTION_MOTOR1_ID = 0x206,		//CAN反馈报文标识符
+		CAN_Z_MOTION_MOTOR2_ID = 0x207,
+//    CAN_GRIPPER_1_MOTOR_ID = 0x207,//CAN反馈报文标识符
+//		CAN_GRIPPER_2_MOTOR_ID = 0x208,//CAN反馈报文标识符
 		CAN_GIMBAL_ALL_ID = 0x1FF	//CAN发送报文标识符
 
 } can_msg_id_e;
@@ -59,9 +60,11 @@ extern void CAN_CMD_GIMBAL(int16_t yaw, int16_t pitch, int16_t shoot, int16_t re
 //发送底盘电机控制命令
 extern void CAN_CMD_CHASSIS(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 //返回yaw电机变量地址，通过指针方式获取原始数据
-extern const motor_measure_t *get_Y_LEFT_MOTOR_Measure_Point(void);
+extern const motor_measure_t *get_Y_MOTION_MOTOR_Measure_Point(void);
 //返回pitch电机变量地址，通过指针方式获取原始数据
-extern const motor_measure_t *get_Y_RIGHT_MOTOR_Measure_Point(void);
+extern const motor_measure_t *get_Z_MOTION_MOTOR1_Measure_Point(void);
+extern const motor_measure_t *get_Z_MOTION_MOTOR2_Measure_Point(void);
+
 //返回trigger电机变量地址，通过指针方式获取原始数据
 extern const motor_measure_t *get_GRIPPER_1_MOTOR_Measure_Point(void);
 extern const motor_measure_t *get_GRIPPER_2_MOTOR_Measure_Point(void);	

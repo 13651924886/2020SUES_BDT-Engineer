@@ -31,6 +31,7 @@
 #include "rng.h"
 #include "sys.h"
 #include "timer.h"
+#include "cylinder_gpio.h"
 
 #include "exit_init.h"
 #include "chassis_task.h"
@@ -68,7 +69,7 @@ void BSP_init(void)
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     //初始化滴答时钟 1ms SysTick中断  中断服务函数位于delay.c
     delay_init(configTICK_RATE_HZ);
-    //流水灯，红绿灯初始化
+    //流水灯，红绿灯初始化i1
     led_configuration();
     //24V 输出控制口 初始化
     power_ctrl_configuration();
@@ -78,6 +79,8 @@ void BSP_init(void)
         power_ctrl_on(i);
         delay_us(POWER_CTRL_ONE_BY_ONE_TIME);
     }
+		//气缸对应的电磁阀GPIO控制初始化
+		Cylinder_GPIO_Init();
     //17mm和42mm舱门PWM初始化 TIM8 CH3 CH4
     AMMO_OUT_PWM_configuration();
 		//救援夹爪PWM初始化 TIM5 CH3:B CH4:A
