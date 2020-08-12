@@ -91,6 +91,7 @@ void BSP_init(void)
 		buzzer_init(350, 90);
     //CAN接口初始化 1M波特率
 		CAN1_mode_init(CAN_SJW_1tq, CAN_BS2_2tq, CAN_BS1_6tq, 5, CAN_Mode_Normal);
+		CAN2_mode_init(CAN_SJW_1tq, CAN_BS2_2tq, CAN_BS1_6tq, 5, CAN_Mode_Normal);
 		//底盘初始化
 		chassis_Setup();
 		//夹爪任务
@@ -109,7 +110,6 @@ void BSP_init(void)
 		buzzer_init(30000, 90);
 		/* 目前用不着的任务*/
     //TIM6_Init(60000, 90);
-		//CAN2_mode_init(CAN_SJW_1tq, CAN_BS2_2tq, CAN_BS1_6tq, 5, CAN_Mode_Normal);
     //flash读取函数，把校准值放回对应参数
     //cali_param_init();
 		//Calibration_Init();

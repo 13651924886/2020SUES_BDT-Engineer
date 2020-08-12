@@ -144,7 +144,9 @@ static void GRIPPER_init(GRIPPER_System_t *GRIPPER_move_init)
 		//目前的爪子相对角度位置由Motor1的相对角度来决定
 		GRIPPER_move_init->Position_Max = GRIPPER_MAX_POSITION;
 		GRIPPER_move_init->Position_Min = GRIPPER_MIN_POSITION;
-
+		//圈数初始化为0
+		GRIPPER_move_init->GRIPPER_1_motor.round_count = 0;
+		GRIPPER_move_init->GRIPPER_2_motor.round_count = 0;
     //更新一下数据
     GRIPPER_feedback_update(GRIPPER_move_init);
 }
@@ -156,13 +158,13 @@ static void GRIPPER_set_mode(GRIPPER_System_t *GRIPPER_move)
     }
 	 if (switch_is_up(rc_ctrl.rc.s[0]))
 		{
-			GRIPPER_move->GRIPPER_mode = GRIPPER_STOP;
-		}
-	 if (switch_is_mid(rc_ctrl.rc.s[0]))
-		{
 			GRIPPER_move->GRIPPER_mode = GRIPPER_ENGAGE;
 		}
-	 if(switch_is_down(rc_ctrl.rc.s[0]))
+		if (switch_is_mid(rc_ctrl.rc.s[0]))
+		{
+			GRIPPER_move->GRIPPER_mode = GRIPPER_HOME;
+		}
+	 if (switch_is_down(rc_ctrl.rc.s[0]))
 		{
 			GRIPPER_move->GRIPPER_mode = GRIPPER_STOP;
 		}
@@ -174,26 +176,33 @@ static void GRIPPER_feedback_update(GRIPPER_System_t *GRIPPER_move_update)
     {
         return;
     }
+		static fp32 init_ecd1 = 0.0f;
+		static fp32 init_ecd2 = 0.0f;
+		
+		if(init_ecd1 == 0)init_ecd1 	= GRIPPER_move_update->GRIPPER_1_motor.gripper_motor_measure->ecd;
+		if(init_ecd2 == 0)init_ecd2 = GRIPPER_move_update->GRIPPER_2_motor.gripper_motor_measure->ecd;
 	/*********** 更新chassis_move->motor_chassis[i].speed和accel ***********/
         //更新电机反馈的实际速度，加速度是速度的PID微分
-				GRIPPER_move_update->GRIPPER_1_motor.speed = GRIPPER_move_update->GRIPPER_1_motor.gripper_motor_measure->speed_rpm;
-				GRIPPER_move_update->GRIPPER_2_motor.speed = GRIPPER_move_update->GRIPPER_2_motor.gripper_motor_measure->speed_rpm;
+		GRIPPER_move_update->GRIPPER_1_motor.speed = GRIPPER_move_update->GRIPPER_1_motor.gripper_motor_measure->speed_rpm;
+		GRIPPER_move_update->GRIPPER_2_motor.speed = GRIPPER_move_update->GRIPPER_2_motor.gripper_motor_measure->speed_rpm;
 																								
-        GRIPPER_move_update->GRIPPER_1_motor.accel = GRIPPER_move_update->GRIPPER_1_motor_Angular_Speed_pid.Dbuf[0]*GRIPPER_CONTROL_FREQUENCE;
-		    GRIPPER_move_update->GRIPPER_2_motor.accel = GRIPPER_move_update->GRIPPER_2_motor_Angular_Speed_pid.Dbuf[0]*GRIPPER_CONTROL_FREQUENCE;
+    GRIPPER_move_update->GRIPPER_1_motor.accel = GRIPPER_move_update->GRIPPER_1_motor_Angular_Speed_pid.Dbuf[0]*GRIPPER_CONTROL_FREQUENCE;
+		GRIPPER_move_update->GRIPPER_2_motor.accel = GRIPPER_move_update->GRIPPER_2_motor_Angular_Speed_pid.Dbuf[0]*GRIPPER_CONTROL_FREQUENCE;
 				
-				GRIPPER_move_update->GRIPPER_1_motor.relative_angle = motor_ecd_to_angle_change(GRIPPER_move_update->GRIPPER_1_motor.gripper_motor_measure->ecd,GRIPPER_move_update->GRIPPER_1_motor.offset_ecd);
-				GRIPPER_move_update->GRIPPER_2_motor.relative_angle = motor_ecd_to_angle_change(GRIPPER_move_update->GRIPPER_2_motor.gripper_motor_measure->ecd,GRIPPER_move_update->GRIPPER_2_motor.offset_ecd);
+		GRIPPER_move_update->GRIPPER_1_motor.relative_angle = motor_ecd_to_angle_change(GRIPPER_move_update->GRIPPER_1_motor.gripper_motor_measure->ecd,GRIPPER_move_update->GRIPPER_1_motor.offset_ecd);
+		GRIPPER_move_update->GRIPPER_2_motor.relative_angle = motor_ecd_to_angle_change(GRIPPER_move_update->GRIPPER_2_motor.gripper_motor_measure->ecd,GRIPPER_move_update->GRIPPER_2_motor.offset_ecd);
 
-				//目前抓手位置由Motor1的相对角度来决定
-				GRIPPER_move_update->Position = motor_ecd_to_angle_change(GRIPPER_move_update->GRIPPER_1_motor.gripper_motor_measure->ecd,GRIPPER_move_update->GRIPPER_1_motor.offset_ecd);
+//				//目前抓手位置由Motor1的相对角度来决定
+//				GRIPPER_move_update->Position = motor_ecd_to_angle_change(GRIPPER_move_update->GRIPPER_1_motor.gripper_motor_measure->ecd,GRIPPER_move_update->GRIPPER_1_motor.offset_ecd);
 		
 	/********** 根据更新的chassis_move->motor_chassis[i].speed来计算Vx，Vy，Wz ******************************/
 				//目前抓手角速度由Motor1的角速度来决定
-				GRIPPER_move_update->Angular_Velocity = GRIPPER_move_update->GRIPPER_1_motor.speed; //角速度实际上并不是RPM转速，之后再改
+		GRIPPER_move_update->Angular_Velocity = GRIPPER_move_update->GRIPPER_1_motor.speed; //角速度实际上并不是RPM转速，之后再改
 				//目前抓手位置由Motor1的相对角度来决定
-				GRIPPER_move_update->Position = motor_ecd_to_angle_change(GRIPPER_move_update->GRIPPER_1_motor.gripper_motor_measure->ecd,GRIPPER_move_update->GRIPPER_1_motor.offset_ecd);				
-
+		GRIPPER_move_update->GRIPPER_1_motor.Position = Motor_RoundCount_Position_Calc(GRIPPER_move_update->GRIPPER_1_motor.gripper_motor_measure->ecd,
+																																			GRIPPER_move_update->GRIPPER_1_motor.gripper_motor_measure->last_ecd,
+																																			&GRIPPER_move_update->GRIPPER_1_motor.round_count,
+																																			init_ecd1);
 }
 
 static void GRIPPER_set_contorl(GRIPPER_System_t *GRIPPER_move)
@@ -272,6 +281,4 @@ static fp32 motor_ecd_to_angle_change(uint16_t ecd, uint16_t offset_ecd)
 
     return relative_ecd * Motor_Ecd_to_Rad;//电机编码值转化成角度值 rad
 }
-
-static fp32 motor_ecd_to_position_change(GRIPPER_System_t *Gripper_ecd, uint16_t *po  );
 

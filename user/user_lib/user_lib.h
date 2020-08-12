@@ -18,6 +18,14 @@ typedef __packed struct
     fp32 num[1];       //滤波参数
     fp32 frame_period; //滤波的时间间隔 单位 s
 } first_order_filter_type_t;
+
+typedef __packed struct
+{	
+		fp32 input;
+		fp32 output;
+		fp32 fliter_num[3];
+		fp32 speed_num[3];
+}second_order_filter_type_t;
 //快速开方
 extern fp32 invSqrt(fp32 num);
 
@@ -47,6 +55,8 @@ extern fp32 loop_fp32_constrain(fp32 Input, fp32 minValue, fp32 maxValue);
 //角度 °限幅 180 ~ -180
 extern fp32 theta_format(fp32 Ang);
 
+extern int64_t Motor_RoundCount_Position_Calc(uint16_t ecd,uint16_t last_ecd,int32_t *round_count,fp32 init_ecd);
+ 
 //弧度格式化为-PI~PI
 #define rad_format(Ang) loop_fp32_constrain((Ang), -PI, PI)
 

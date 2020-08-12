@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'BDT-Engineer' 
- * Target:  'standard' 
+ * Target:  'Engineer' 
  */
 
 #ifndef RTE_COMPONENTS_H

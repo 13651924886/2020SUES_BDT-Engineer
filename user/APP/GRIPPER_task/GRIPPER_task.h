@@ -48,8 +48,9 @@
 /*********结构体类声明 待写*****/
 typedef enum
 {
+	GRIPPER_STOP,
+	GRIPPER_HOME,
 	GRIPPER_ENGAGE,
-	GRIPPER_STOP
 	
 } GRIPPER_mode_e;
 
@@ -62,6 +63,9 @@ typedef struct
 	fp32 accel;
   fp32 speed;
   fp32 speed_set;
+	int32_t round_count;
+	int64_t Position;                        
+  int64_t Position_set;                    
   int16_t give_current;
 } GRIPPER_Motor_t;
 
@@ -85,9 +89,6 @@ typedef struct
 
 	fp32 Angular_Velocity;								 //旋转转速（RPM）
 	fp32 Angular_Velocity_set;						 //旋转转速期望（RPM）
-	
-  uint16_t Position;                         //底盘速度 左右方向 左为正  单位 m/s
-  uint16_t Position_set;                     //底盘设定速度 左右方向 左为正，单位 m/s
 	
   fp32 Angular_Velocity_max_speed;  //左右方向最大速度 单位m/s
   fp32 Angular_Velocity_min_speed;  //左右方向最小速度 单位m/s

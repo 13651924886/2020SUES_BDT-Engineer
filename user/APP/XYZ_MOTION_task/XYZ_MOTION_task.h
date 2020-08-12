@@ -25,12 +25,15 @@
 #define Y_MOTION_MAX_POSITION	980000.0f
 #define Y_MOTION_MIN_POSITION 0.0f
 
+#define Z_MOTION_MAX_POSITION	490000.0f
+#define Z_MOTION_MIN_POSITION 0.0f
+
 #define Y_MID_POSITION 		0.0f
 #define Y_POSITION_ADD		490000.0f
 
+#define Z_INIT_POSITION		0.0f
+#define Z_POSITION_ADD		490000.0f
 
-
-#define SychronicWheelRadius 0.025 //0.025m 25mm
 
 /* Y Motion PID参数*/
 #define Y_MOTION_M3505_MOTOR_SPEED_PID_KP 100.0f
@@ -93,8 +96,8 @@
 /*********结构体类声明*****/
 typedef enum
 {
-	
-	HOME = 0,
+	STOP,
+	HOME,
 	ENGAGE,
 	
 } XYZ_MOTION_mode_e;
@@ -167,9 +170,12 @@ typedef struct
 	
 	fp32 Position;
 	fp32 Position_set;
+	
+	fp32 Position_Max;
+	fp32 Position_Min;
 
-  fp32 v_max_speed;  //左右方向最大速度 单位m/s
-  fp32 v_min_speed;  //左右方向最小速度 单位m/s
+//  fp32 v_max_speed;  //左右方向最大速度 单位m/s
+//  fp32 v_min_speed;  //左右方向最小速度 单位m/s
 	
 }Z_MOTION_System;
 

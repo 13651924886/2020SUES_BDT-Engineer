@@ -15,7 +15,7 @@ fp32 invSqrt(fp32 num)
 
 /**
   * @brief          斜波函数初始化
-  * @author         RM
+  * @author         SUES-BDT
   * @param[in]      斜波函数结构体
   * @param[in]      间隔的时间，单位 s
   * @param[in]      最大值
@@ -33,7 +33,7 @@ void ramp_init(ramp_function_source_t *ramp_source_type, fp32 frame_period, fp32
 
 /**
   * @brief          斜波函数计算，根据输入的值进行叠加， 输入单位为 /s 即一秒后增加输入的值
-  * @author         RM
+  * @author         SUES-BDT
   * @param[in]      斜波函数结构体
   * @param[in]      输入值
   * @param[in]      滤波参数
@@ -54,7 +54,7 @@ void ramp_calc(ramp_function_source_t *ramp_source_type, fp32 input)
 }
 /**
   * @brief          一阶低通滤波初始化
-  * @author         RM
+  * @author         SUES-BDT
   * @param[in]      一阶低通滤波结构体
   * @param[in]      间隔的时间，单位 s
   * @param[in]      滤波参数
@@ -70,7 +70,7 @@ void first_order_filter_init(first_order_filter_type_t *first_order_filter_type,
 
 /**
   * @brief          一阶低通滤波计算
-  * @author         RM
+  * @author         SUES-BDT
   * @param[in]      一阶低通滤波结构体
   * @param[in]      间隔的时间，单位 s
   * @retval         返回空
@@ -82,6 +82,39 @@ void first_order_filter_cali(first_order_filter_type_t *first_order_filter_type,
         first_order_filter_type->num[0] / (first_order_filter_type->num[0] + first_order_filter_type->frame_period) * first_order_filter_type->out 
 	+ first_order_filter_type->frame_period / (first_order_filter_type->num[0] + first_order_filter_type->frame_period) * first_order_filter_type->input;
 }
+
+
+/**
+  * @brief          二阶低通滤波初始化
+  * @author         SUES-BDT
+  * @param[in]      二阶低通滤波结构体
+  * @param[in]      间隔的时间，单位 s
+  * @param[in]      滤波参数
+  * @retval         返回空
+  */
+//void second_order_filter_init(second_order_filter_type_t *second_order_filter_type, fp32 frame_period, const fp32 num[1])
+//{
+//    second_order_filter_type->frame_period = frame_period;
+//    second_order_filter_type->num[0] = num[0];
+//    second_order_filter_type->input = 0.0f;
+//    second_order_filter_type->out = 0.0f;
+//}
+
+
+///**
+//  * @brief          二阶低通滤波计算
+//  * @author         SUES-BDT
+//  * @param[in]      二阶低通滤波结构体
+//  * @param[in]      间隔的时间，单位 s
+//  * @retval         返回空
+//  */
+//void second_order_filter_cali(second_order_filter_type_t *second_order_filter_type, fp32 input)
+//{
+//    second_order_filter_type->input = input;
+//    second_order_filter_type->out =
+//        second_order_filter_type->num[0] / (second_order_filter_type->num[0] + second_order_filter_type->frame_period) * second_order_filter_type->out 
+//	+ second_order_filter_type->frame_period / (second_order_filter_type->num[0] + second_order_filter_type->frame_period) * second_order_filter_type->input;
+//}
 
 //绝对限制
 void abs_limit(fp32 *num, fp32 Limit)
@@ -184,4 +217,18 @@ fp32 loop_fp32_constrain(fp32 Input, fp32 minValue, fp32 maxValue)
 fp32 theta_format(fp32 Ang)
 {
     return loop_fp32_constrain(Ang, -180.0f, 180.0f);
+}
+
+int64_t Motor_RoundCount_Position_Calc(uint16_t ecd,uint16_t last_ecd,int32_t *round_count,fp32 init_ecd)
+{
+   if (ecd - last_ecd > 4096)
+    {
+        *round_count -= 1;
+    }
+    else if (ecd - last_ecd < -4096)
+    {
+        *round_count += 1;
+    }
+		
+		return (*round_count * 8191+ ecd -init_ecd);
 }

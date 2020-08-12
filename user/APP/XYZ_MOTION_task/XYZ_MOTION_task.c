@@ -1,3 +1,9 @@
+/* TODO LIST*/
+//1. Y MOTION添加编码器
+//2. 串级PID写成struct简化Y_MOTION_System_PID_Task()和Z_MOTION_System_PID_Task()
+//3. 二阶低通滤波写成struct 给3508速度滤波
+//4. 3508 round_count改写成函数
+
 #include "XYZ_MOTION_task.h"
 
 #define rc_deadline_limit(input, output, dealine)        \
@@ -22,6 +28,10 @@ static void XYZ_MOTION_set_mode(XYZ_MOTION_System_t *XYZ_MOTION_move);
 static void XYZ_MOTION_mode_transit(XYZ_MOTION_System_t *XYZ_MOTION_move);
 static void XYZ_MOTION_set_control(XYZ_MOTION_System_t *XYZ_MOTION_move);
 static void XYZ_MOTION_control_loop(XYZ_MOTION_System_t *XYZ_MOTION_move);
+		
+static void Y_MOTION_System_PID_Task(Y_MOTION_System *Y_MOTION_move);
+static void Z_MOTION_System_PID_Task(Z_MOTION_System *Z_MOTION_move);
+
 
 void XYZ_MOTION_Setup(void)
 {
@@ -56,8 +66,6 @@ static void XYZ_MOTION_init(XYZ_MOTION_System_t *XYZ_MOTION_move_init)
 
 		const static fp32 Z_MOTION_motor1_position_pid[3] = {Y_MOTION_M3505_MOTOR_POSITION_PID_KP,Y_MOTION_M3505_MOTOR_POSITION_PID_KI, Y_MOTION_M3505_MOTOR_POSITION_PID_KD};
 		const static fp32 Z_MOTION_motor2_position_pid[3] = {Y_MOTION_M3505_MOTOR_POSITION_PID_KP,Y_MOTION_M3505_MOTOR_POSITION_PID_KI, Y_MOTION_M3505_MOTOR_POSITION_PID_KD};
-    //底盘一阶滤波参数
-			//    const static fp32 XYZ_y_order_filter[1] = {MOTION_ACCEL_Y_NUM};
 
     //开机状态为停止
     XYZ_MOTION_move_init->XYZ_mode = HOME;	
@@ -73,12 +81,23 @@ static void XYZ_MOTION_init(XYZ_MOTION_System_t *XYZ_MOTION_move_init)
 		XYZ_MOTION_move_init->Z_MOTION_System.Z_MOTION_motor1.XYZ_MOTION_motor_measure = get_Z_MOTION_MOTOR1_Measure_Point();
 		XYZ_MOTION_move_init->Z_MOTION_System.Z_MOTION_motor2.XYZ_MOTION_motor_measure = get_Z_MOTION_MOTOR2_Measure_Point();
 /**** 初始化PID 运动 ****/
-	
+		/* Y MOTION Motor*/
 		PID_Init(&XYZ_MOTION_move_init->Y_MOTION_System.Y_MOTION_motor_Speed_pid, PID_POSITION, Y_MOTION_motor_speed_pid,
-							Y_MOTION_M3505_MOTOR_SPEED_PID_MAX_OUT, Y_MOTION_M3505_MOTOR_SPEED_PID_MAX_IOUT);
-		
+							Y_MOTION_M3505_MOTOR_SPEED_PID_MAX_OUT, Y_MOTION_M3505_MOTOR_SPEED_PID_MAX_IOUT);		
 		PID_Init(&XYZ_MOTION_move_init->Y_MOTION_System.Y_MOTION_motor_Position_pid, PID_POSITION, Y_MOTION_motor_position_pid,
 							Y_MOTION_M3505_MOTOR_POSITION_PID_MAX_OUT, Y_MOTION_M3505_MOTOR_POSITION_PID_MAX_IOUT);
+							
+		/* Z MOTION Motor1*/					
+		PID_Init(&XYZ_MOTION_move_init->Z_MOTION_System.Z_MOTION_motor1_Position_pid, PID_POSITION, Z_MOTION_motor1_position_pid,
+							Z_MOTION_M3505_MOTOR1_POSITION_PID_MAX_OUT, Z_MOTION_M3505_MOTOR1_POSITION_PID_MAX_IOUT);
+		PID_Init(&XYZ_MOTION_move_init->Z_MOTION_System.Z_MOTION_motor1_Speed_pid, PID_POSITION, Z_MOTION_motor1_speed_pid,
+							Z_MOTION_M3505_MOTOR1_SPEED_PID_MAX_OUT, Z_MOTION_M3505_MOTOR1_SPEED_PID_MAX_IOUT);	
+							
+		/* Z MOTION Motor2*/
+		PID_Init(&XYZ_MOTION_move_init->Z_MOTION_System.Z_MOTION_motor2_Position_pid, PID_POSITION, Z_MOTION_motor2_position_pid,
+							Z_MOTION_M3505_MOTOR2_POSITION_PID_MAX_OUT, Z_MOTION_M3505_MOTOR2_POSITION_PID_MAX_IOUT);
+		PID_Init(&XYZ_MOTION_move_init->Z_MOTION_System.Z_MOTION_motor2_Speed_pid, PID_POSITION, Z_MOTION_motor2_speed_pid,
+							Z_MOTION_M3505_MOTOR2_SPEED_PID_MAX_OUT, Z_MOTION_M3505_MOTOR2_SPEED_PID_MAX_IOUT);
 						
  
 //    ramp_init(&XYZ_MOTION_move_init->Y_MOTION_System.Y_cmd_ramp, Y_MOTION_CONTROL_TIME, Y_MOTION_MIN_POSITION,);
@@ -86,6 +105,9 @@ static void XYZ_MOTION_init(XYZ_MOTION_System_t *XYZ_MOTION_move_init)
     //限幅和Y方向的运动速度【MAX and MIN】
 		XYZ_MOTION_move_init->Y_MOTION_System.Position_Max = Y_MOTION_MAX_POSITION;
     XYZ_MOTION_move_init->Y_MOTION_System.Position_Min = Y_MOTION_MIN_POSITION;
+		
+		XYZ_MOTION_move_init->Z_MOTION_System.Position_Max = Z_MOTION_MAX_POSITION;
+    XYZ_MOTION_move_init->Z_MOTION_System.Position_Min = Z_MOTION_MIN_POSITION;
 
     //更新一下数据
     XYZ_MOTION_feedback_update(XYZ_MOTION_move_init);
@@ -104,9 +126,13 @@ static void XYZ_MOTION_set_mode(XYZ_MOTION_System_t *XYZ_MOTION_move)
     }
 	 if (switch_is_down(rc_ctrl.rc.s[0]))
 		{
-			XYZ_MOTION_move->XYZ_mode = HOME;
+			XYZ_MOTION_move->XYZ_mode = STOP;
 		}
 	 if (switch_is_mid(rc_ctrl.rc.s[0]))
+		{
+			XYZ_MOTION_move->XYZ_mode = HOME;
+		}
+	 if (switch_is_up(rc_ctrl.rc.s[0]))
 		{
 			XYZ_MOTION_move->XYZ_mode = ENGAGE;
 		}
@@ -141,7 +167,11 @@ static void XYZ_MOTION_feedback_update(XYZ_MOTION_System_t *XYZ_MOTION_move_upda
 		
 		//////////////初次上电的ecd值，用于position归零
 		static fp32 init_ecd = 0.0f;
+		static fp32 init_ecd2 = 0.0f;
+		static fp32 init_ecd3 = 0.0f;
 		if(init_ecd == 0)init_ecd = XYZ_MOTION_move_update->Y_MOTION_System.Y_MOTION_motor.XYZ_MOTION_motor_measure->ecd;
+		if(init_ecd2 == 0)init_ecd2 = XYZ_MOTION_move_update->Z_MOTION_System.Z_MOTION_motor1.XYZ_MOTION_motor_measure->ecd;
+		if(init_ecd3 == 0)init_ecd3 = XYZ_MOTION_move_update->Z_MOTION_System.Z_MOTION_motor2.XYZ_MOTION_motor_measure->ecd;
 		
 		//////////////3508电机速度
     static fp32 speed_fliter_1 = 0.0f;
@@ -195,6 +225,7 @@ static void XYZ_MOTION_set_control(XYZ_MOTION_System_t *XYZ_MOTION_move)
   }
 		
 	static fp32 Y_position_set = Y_MID_POSITION;	
+	static fp32 Z_position_set = Z_INIT_POSITION;
 	static uint16_t last_turn_keyboard = 0;
   static uint8_t 	mode_turn_flag = 0;
 	
@@ -203,13 +234,15 @@ static void XYZ_MOTION_set_control(XYZ_MOTION_System_t *XYZ_MOTION_move)
 	if (XYZ_MOTION_move->XYZ_mode ==	HOME)
 	{
 		Y_position_set = Y_MID_POSITION;
+		Z_position_set = Z_INIT_POSITION;
 	}
 	//ENGAGE模式
 	if (XYZ_MOTION_move->XYZ_mode ==	ENGAGE)
 	{
 		//短按一次检测
 		if(	((XYZ_MOTION_move->XYZ_MOTION_System_RC->key.v & Y_MOTION_RIGHT_KEY) && !(last_turn_keyboard & Y_MOTION_RIGHT_KEY))||
-			  ((XYZ_MOTION_move->XYZ_MOTION_System_RC->key.v & Y_MOTION_LEFT_KEY)  && !(last_turn_keyboard & Y_MOTION_LEFT_KEY)) )
+			  ((XYZ_MOTION_move->XYZ_MOTION_System_RC->key.v & Y_MOTION_LEFT_KEY)  && !(last_turn_keyboard & Y_MOTION_LEFT_KEY)) ||
+				((XYZ_MOTION_move->XYZ_MOTION_System_RC->key.v & Z_MOTION_KEY)  && !(last_turn_keyboard & Z_MOTION_KEY)) )
 		{
 				 if (mode_turn_flag == 0)
 				 {
@@ -235,12 +268,26 @@ static void XYZ_MOTION_set_control(XYZ_MOTION_System_t *XYZ_MOTION_move)
 						Y_position_set = fp32_constrain(Y_position_set,XYZ_MOTION_move->Y_MOTION_System.Position_Min, XYZ_MOTION_move->Y_MOTION_System.Position_Max);
 						i++;
 				}
+				if(XYZ_MOTION_move->XYZ_MOTION_System_RC->key.v & Z_MOTION_KEY && i == 0)	
+				{
+						if( Z_position_set == Z_INIT_POSITION)
+						{
+							Z_position_set +=  Z_POSITION_ADD;
+							Z_position_set = fp32_constrain(Z_position_set,XYZ_MOTION_move->Z_MOTION_System.Position_Min, XYZ_MOTION_move->Z_MOTION_System.Position_Max);
+						}
+						if( Z_position_set != Z_INIT_POSITION)
+						{
+							Z_position_set -=  Z_POSITION_ADD;
+							Z_position_set = fp32_constrain(Z_position_set,XYZ_MOTION_move->Z_MOTION_System.Position_Min, XYZ_MOTION_move->Z_MOTION_System.Position_Max);
+						}
+						i++;
+				}
 				i = 0;
 				mode_turn_flag = 0;
 		}		
 	}
 	XYZ_MOTION_move->Y_MOTION_System.Position_set = Y_position_set;
-	
+	XYZ_MOTION_move->Z_MOTION_System.Position_set = Z_position_set;
 	
 }
 
@@ -250,18 +297,42 @@ static void XYZ_MOTION_control_loop(XYZ_MOTION_System_t *XYZ_MOTION_move)
     {
         return;
     }
-		//角度环外环	位置式
-		XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor.speed_set = PID_Calc(&XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor_Position_pid,
-																	XYZ_MOTION_move->Y_MOTION_System.Position, XYZ_MOTION_move->Y_MOTION_System.Position_set);
-		//角速度环内环 位置式
-		XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor.current_set = PID_Calc(&XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor_Speed_pid,
-																	XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor.angular_speed,XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor.speed_set);
-    //控制值赋值
-    XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor.give_current = (int16_t)(XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor.current_set);
+		Y_MOTION_System_PID_Task(&XYZ_MOTION_move->Y_MOTION_System);
+		Z_MOTION_System_PID_Task(&XYZ_MOTION_move->Z_MOTION_System);
 		
-		CAN_CMD_Upper(XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor.give_current, 0,
-                                0, 0);		
+		CAN1_CMD_XYZ(XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor.give_current, XYZ_MOTION_move->Z_MOTION_System.Z_MOTION_motor1.give_current,
+                                XYZ_MOTION_move->Z_MOTION_System.Z_MOTION_motor2.give_current, 0);		
 }
 
+static void Y_MOTION_System_PID_Task(Y_MOTION_System *Y_MOTION_move)
+{
+			//角度环外环	位置式
+		Y_MOTION_move->Y_MOTION_motor.speed_set = PID_Calc(&Y_MOTION_move->Y_MOTION_motor_Position_pid,
+																	Y_MOTION_move->Position, Y_MOTION_move->Position_set);
+		//角速度环内环 位置式
+		Y_MOTION_move->Y_MOTION_motor.current_set = PID_Calc(&Y_MOTION_move->Y_MOTION_motor_Speed_pid,
+																	Y_MOTION_move->Y_MOTION_motor.angular_speed,Y_MOTION_move->Y_MOTION_motor.speed_set);
+    //控制值赋值
+    Y_MOTION_move->Y_MOTION_motor.give_current = (int16_t)(Y_MOTION_move->Y_MOTION_motor.current_set);
+}
 
-
+static void Z_MOTION_System_PID_Task(Z_MOTION_System *Z_MOTION_move)
+{
+				//角度环外环	位置式
+		Z_MOTION_move->Z_MOTION_motor1.speed_set = PID_Calc(&Z_MOTION_move->Z_MOTION_motor1_Position_pid,
+																	Z_MOTION_move->Position, Z_MOTION_move->Position_set);
+		//角速度环内环 位置式
+		Z_MOTION_move->Z_MOTION_motor1.current_set = PID_Calc(&Z_MOTION_move->Z_MOTION_motor1_Speed_pid,
+																	Z_MOTION_move->Z_MOTION_motor1.angular_speed,Z_MOTION_move->Z_MOTION_motor1.speed_set);
+    //控制值赋值
+    Z_MOTION_move->Z_MOTION_motor1.give_current = (int16_t)(Z_MOTION_move->Z_MOTION_motor1.current_set);
+	
+					//角度环外环	位置式
+		Z_MOTION_move->Z_MOTION_motor2.speed_set = PID_Calc(&Z_MOTION_move->Z_MOTION_motor2_Position_pid,
+																	Z_MOTION_move->Position, Z_MOTION_move->Position_set);
+		//角速度环内环 位置式
+		Z_MOTION_move->Z_MOTION_motor2.current_set = PID_Calc(&Z_MOTION_move->Z_MOTION_motor2_Speed_pid,
+																	Z_MOTION_move->Z_MOTION_motor2.angular_speed,Z_MOTION_move->Z_MOTION_motor2.speed_set);
+    //控制值赋值
+    Z_MOTION_move->Z_MOTION_motor2.give_current = (int16_t)(Z_MOTION_move->Z_MOTION_motor2.current_set);
+}
