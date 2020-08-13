@@ -180,6 +180,22 @@ void CAN1_CMD_XYZ(int16_t Y_MOTION_motor, int16_t Z_MOTION_MOTOR1, int16_t Z_MOT
     CAN_Transmit( XYZ_CAN,  &GIMBAL_TxMessage );
 }
 
+void CAN2_CMD_GRIPPER(int16_t GRIPPER_MOTOR1, int16_t GRIPPER_MOTOR2, int16_t NONE1, int16_t NONE2)
+{
+    GIMBAL_TxMessage.StdId = CAN_CHASSIS_ALL_ID;
+    GIMBAL_TxMessage.IDE = CAN_ID_STD;
+    GIMBAL_TxMessage.RTR = CAN_RTR_DATA;
+    GIMBAL_TxMessage.DLC = 0x08;
+    GIMBAL_TxMessage.Data[0] = (GRIPPER_MOTOR1 >> 8);
+    GIMBAL_TxMessage.Data[1] = GRIPPER_MOTOR1;
+    GIMBAL_TxMessage.Data[2] = (GRIPPER_MOTOR2 >> 8);
+    GIMBAL_TxMessage.Data[3] = GRIPPER_MOTOR2;
+    GIMBAL_TxMessage.Data[4] = (NONE1 >> 8);
+    GIMBAL_TxMessage.Data[5] = NONE1;
+    GIMBAL_TxMessage.Data[6] = (NONE2 >> 8);
+    GIMBAL_TxMessage.Data[7] = NONE2;
+    CAN_Transmit( GRIPPER_CAN,  &GIMBAL_TxMessage );
+}
 
 //返回yaw电机变量地址，通过指针方式获取原始数据
   const motor_measure_t *get_Y_MOTION_MOTOR_Measure_Point(void)

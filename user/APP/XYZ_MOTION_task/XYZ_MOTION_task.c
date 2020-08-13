@@ -45,6 +45,10 @@ void XYZ_MOTION_task(void)
 	 XYZ_MOTION_feedback_update(&XYZ_MOTION_move);
 	 XYZ_MOTION_set_control(&XYZ_MOTION_move);
 	 XYZ_MOTION_control_loop(&XYZ_MOTION_move);
+#if MOTOR_ENABLE
+	 CAN1_CMD_XYZ(XYZ_MOTION_move.Y_MOTION_System.Y_MOTION_motor.give_current, XYZ_MOTION_move.Z_MOTION_System.Z_MOTION_motor1.give_current,
+                                XYZ_MOTION_move.Z_MOTION_System.Z_MOTION_motor2.give_current, 0);		
+#endif
 }	
 		
 		
@@ -124,11 +128,11 @@ static void XYZ_MOTION_set_mode(XYZ_MOTION_System_t *XYZ_MOTION_move)
     {
         return;
     }
-	 if (switch_is_down(rc_ctrl.rc.s[0]))
+	 if (switch_is_mid(rc_ctrl.rc.s[0]))
 		{
 			XYZ_MOTION_move->XYZ_mode = STOP;
 		}
-	 if (switch_is_mid(rc_ctrl.rc.s[0]))
+	 if (switch_is_down(rc_ctrl.rc.s[0]))
 		{
 			XYZ_MOTION_move->XYZ_mode = HOME;
 		}
@@ -255,6 +259,7 @@ static void XYZ_MOTION_set_control(XYZ_MOTION_System_t *XYZ_MOTION_move)
 		
 	  if (mode_turn_flag)
 	  {
+				//一次仅支持使能一个键，防止手贱乱按
 				static u8 i = 0;
 				if(XYZ_MOTION_move->XYZ_MOTION_System_RC->key.v & Y_MOTION_LEFT_KEY && i == 0 )
 				{
@@ -298,10 +303,8 @@ static void XYZ_MOTION_control_loop(XYZ_MOTION_System_t *XYZ_MOTION_move)
         return;
     }
 		Y_MOTION_System_PID_Task(&XYZ_MOTION_move->Y_MOTION_System);
-		Z_MOTION_System_PID_Task(&XYZ_MOTION_move->Z_MOTION_System);
+		Z_MOTION_System_PID_Task(&XYZ_MOTION_move->Z_MOTION_System);		
 		
-		CAN1_CMD_XYZ(XYZ_MOTION_move->Y_MOTION_System.Y_MOTION_motor.give_current, XYZ_MOTION_move->Z_MOTION_System.Z_MOTION_motor1.give_current,
-                                XYZ_MOTION_move->Z_MOTION_System.Z_MOTION_motor2.give_current, 0);		
 }
 
 static void Y_MOTION_System_PID_Task(Y_MOTION_System *Y_MOTION_move)

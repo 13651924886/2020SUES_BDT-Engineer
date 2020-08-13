@@ -17,6 +17,9 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include "stm32f4xx.h"
+
+
 typedef signed char int8_t;
 typedef signed short int int16_t;
 typedef signed int int32_t;
@@ -31,6 +34,8 @@ typedef unsigned char bool_t;
 typedef float fp32;
 typedef double fp64;
 
+//用于控制所有电机是否使能
+#define MOTOR_ENABLE 0
 //云台电机可能can发送失败的情况，尝试使用 随机延迟发送控制指令的方式解决
 #define GIMBAL_MOTOR_6020_CAN_LOSE_SLOVE 0
 
@@ -47,6 +52,8 @@ typedef double fp64;
 #define USART6_NVIC 2	// 裁判系统用户接口
 
 #define Latitude_At_ShenZhen 22.57025f
+
+#define M3508_Motor_RPM_TO_SPEED  0.00290888208665721596153948461415f
 
 #ifndef NULL
 #define NULL 0

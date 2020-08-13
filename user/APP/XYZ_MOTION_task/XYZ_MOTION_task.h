@@ -86,7 +86,6 @@
 
 #define Z_MOTION_KEY 				KEY_PRESSED_OFFSET_F
 
-#define M3508_Motor_RPM_TO_SPEED  0.00290888208665721596153948461415f
 
 //电机码盘值最大以及中值
 #define Half_ecd_range 4096

@@ -38,6 +38,10 @@ void ramp_calc(ramp_function_source_t *ramp_source_type, fp32 input);
 extern void first_order_filter_init(first_order_filter_type_t *first_order_filter_type, fp32 frame_period, const fp32 num[1]);
 //一阶滤波计算
 extern void first_order_filter_cali(first_order_filter_type_t *first_order_filter_type, fp32 input);
+//二阶低通滤波初始化
+extern void second_order_filter_init(second_order_filter_type_t *second_order_filter_type, const fp32 fliter_num[3]);
+//二阶低通滤波计算
+extern void second_order_filter_calc(second_order_filter_type_t *second_order_filter_type, fp32 input);
 //绝对限制
 extern void abs_limit(fp32 *num, fp32 Limit);
 //判断符号位

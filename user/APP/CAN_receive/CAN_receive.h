@@ -19,8 +19,10 @@
 #define CANTASK_H
 #include "main.h"
 
-#define CHASSIS_CAN CAN1
-#define XYZ_CAN CAN1
+#define CHASSIS_CAN 	CAN1
+#define XYZ_CAN 			CAN1
+
+#define GRIPPER_CAN 	CAN2
 
 /* CAN send and receive ID */
 typedef enum
@@ -42,10 +44,10 @@ typedef enum
 //can2	
     CAN_GRIPPER_1_MOTOR_ID = 0x201,//CAN反馈报文标识符
 		CAN_GRIPPER_2_MOTOR_ID = 0x202,//CAN反馈报文标识符
-		CAN_GIMBAL_YAW_MOTOR_ID = 0x203,
-		CAN_GIMBAL_PITCH_MOTOR_ID = 0x204,
-		CAN_17AMMO_HATCH_MOTOR_ID = 0x205,
-		CAN_42AMMO_HATCH_MOTOR_ID = 0x206,
+		CAN_GIMBAL_YAW_MOTOR_ID = 0x205,
+		CAN_GIMBAL_PITCH_MOTOR_ID = 0x206,
+		CAN_17AMMO_HATCH_MOTOR_ID = 0x207,
+		CAN_42AMMO_HATCH_MOTOR_ID = 0x208,
 
 } can_msg_id_e;
 
@@ -65,6 +67,7 @@ extern void CAN_CMD_CHASSIS_RESET_ID(void);
 extern void CAN1_CMD_CHASSIS(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 
 extern void CAN1_CMD_XYZ(int16_t Y_MOTION_motor, int16_t Z_MOTION_MOTOR1, int16_t Z_MOTION_MOTOR2, int16_t GPRIPPER_MOTOR2);
+extern void CAN2_CMD_GRIPPER(int16_t GRIPPER_MOTOR1, int16_t GRIPPER_MOTOR2, int16_t NONE1, int16_t NONE2);
 
 //返回yaw电机变量地址，通过指针方式获取原始数据
 extern const motor_measure_t *get_Y_MOTION_MOTOR_Measure_Point(void);
