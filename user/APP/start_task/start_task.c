@@ -31,7 +31,7 @@ static void Loop_1000Hz(void)	//1ms执行一次，执行时间大约为
 			//3轴滑台运动
 			XYZ_MOTION_task();
 			GRIPPER_task();
-//			CATCH_task();
+			CATCH_task();
 //			ReviveCard_ReachOUT();
 //			CAN_CMD_Upper(XYZ_MOTION_move.Y_MOTION_motor.give_current,-XYZ_MOTION_move.Y_MOTION_motor.give_current,
 //                                GRIPPER_move.GRIPPER_1_motor.give_current, ReviveCard_Current);	

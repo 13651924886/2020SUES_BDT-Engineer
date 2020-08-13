@@ -104,7 +104,9 @@ void BSP_init(void)
     remote_control_init();
 		//USART6 + DMA  裁判系统读取	
 		Referee_Task_Init();
-		
+		//气缸GPIO初始化
+		Cylinder_GPIO_Init();
+
 		//初始化完成后蜂鸣器响一声代表初始化成功
 		BSPInit_CompleteBeep();
 		buzzer_init(30000, 90);

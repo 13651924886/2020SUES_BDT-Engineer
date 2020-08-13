@@ -20,6 +20,7 @@
 #define Catch_Cylinder_PIN	 		GPIO_Pin_2
 #define Catch_Cylinder_RCC			RCC_AHB1Periph_GPIOF
 
+
 typedef enum
 {
 	X_Motion_Cylinder = 0,
