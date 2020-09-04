@@ -32,6 +32,7 @@
 #include "sys.h"
 #include "timer.h"
 #include "cylinder_gpio.h"
+#include "Gimbal_task.h"
 
 #include "exit_init.h"
 #include "chassis_task.h"
@@ -79,8 +80,6 @@ void BSP_init(void)
         power_ctrl_on(i);
         delay_us(POWER_CTRL_ONE_BY_ONE_TIME);
     }
-		//气缸对应的电磁阀GPIO控制初始化
-		Cylinder_GPIO_Init();
     //17mm和42mm舱门PWM初始化 TIM8 CH3 CH4
     AMMO_OUT_PWM_configuration();
 		//救援夹爪PWM初始化 TIM5 CH3:B CH4:A
@@ -106,7 +105,8 @@ void BSP_init(void)
 		Referee_Task_Init();
 		//气缸GPIO初始化
 		Cylinder_GPIO_Init();
-
+		//2006两轴云台初始化
+		Gimbal_Setup();
 		//初始化完成后蜂鸣器响一声代表初始化成功
 		BSPInit_CompleteBeep();
 		buzzer_init(30000, 90);

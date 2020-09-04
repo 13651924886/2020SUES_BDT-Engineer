@@ -1,24 +1,5 @@
 #include "Start_Task.h"
 
-#include "Detect_Task.h"
-#include "Chassis_Task.h"
-#include "delay.h"
-#include "User_Task.h"
-#include "buzzer.h"
-#include "XYZ_MOTION_task.h"
-#include "GRIPPER_task.h"
-#include "CATCH_task.h"
-#include "CAN_Receive.h"
-#include "AMMO_OUT_task.h"
-#include "Revive_task.h"
-#include "RescueHook_task.h"
-
-#include "referee_usart_task.h"
-
-
-//偷懒临时加的 之后要写成对象
-#include "Remote_control.h"
-#include "AMMO_OUT_task.h"
 uint32_t test_dT_1000hz[3],test_rT[6];
 
 extern XYZ_MOTION_System_t XYZ_MOTION_move;
@@ -28,6 +9,7 @@ static void Loop_1000Hz(void)	//1ms执行一次，执行时间大约为
 	test_rT[3] = test_dT_1000hz[1] = GetSysTime_us ();
 	test_dT_1000hz[2] = (u32)(test_dT_1000hz[1] - test_dT_1000hz[0]) ;//test_dT_1000hz[2] 是该任务时间片周期
 //////////////////////////////////////////////////////////////////////	
+			Gimbal_Task();
 			//3轴滑台运动
 			XYZ_MOTION_task();
 			GRIPPER_task();

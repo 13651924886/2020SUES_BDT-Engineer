@@ -18,6 +18,25 @@
 #define START_TASK_H
 #include "main.h"
 
+#include "Detect_Task.h"
+#include "Chassis_Task.h"
+#include "delay.h"
+#include "User_Task.h"
+#include "buzzer.h"
+#include "XYZ_MOTION_task.h"
+#include "GRIPPER_task.h"
+#include "CATCH_task.h"
+#include "CAN_Receive.h"
+#include "AMMO_OUT_task.h"
+#include "Revive_task.h"
+#include "RescueHook_task.h"
+
+#include "referee_usart_task.h"
+
+
+//偷懒临时加的 之后要写成对象
+#include "Remote_control.h"
+#include "AMMO_OUT_task.h"
 typedef struct
 {
 void(*task_func)(void);
